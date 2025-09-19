@@ -73,11 +73,11 @@ jobs:
 
       - name: Docker Compose Build
         run: |
-          docker-compose build --parallel
+          docker compose build --parallel
 
       - name: Docker Compose Up (detached)
         run: |
-          docker-compose up -d
+          docker compose up -d
 
       - name: Wait for backend health
         run: |
@@ -98,4 +98,4 @@ jobs:
       - name: Docker Compose Down
         if: always()
         run: |
-          docker-compose down -v
+          docker compose down -v
