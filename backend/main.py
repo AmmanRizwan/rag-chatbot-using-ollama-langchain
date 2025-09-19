@@ -162,6 +162,10 @@ async def upload_document(file: UploadFile = File(...)):
 def index():
   return {"message": "LLM is running"}
 
+@app.get("/health")
+def health_check():
+  return {"status": "healthy", "message": "Backend service is running"}
+
 async def format_sse(data: str, event: str = None) -> str:
     """Format data into SSE format"""
     message = f"data: {json.dumps(data)}\n\n"
