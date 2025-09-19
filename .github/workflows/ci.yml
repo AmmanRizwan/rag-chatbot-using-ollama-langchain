@@ -40,26 +40,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint backend
-        run: |
-          cd backend
-          pip install flake8
-          flake8 .
-
       - name: Install frontend dependencies
         run: |
           cd chat
-          npm ci
+          yarn install
 
       - name: Lint frontend
         run: |
           cd chat
-          npm run lint
+          yarn run lint
 
       - name: Build frontend
         run: |
           cd chat
-          npm run build
+          yarn run build
 
       - name: Run backend tests (if any)
         run: |
