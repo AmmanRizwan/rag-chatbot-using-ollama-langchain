@@ -1,5 +1,5 @@
 # Use Node.js 18 alpine image as base
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Enable corepack for yarn support
 RUN corepack enable
@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json yarn.lock* ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile --production
+RUN yarn install
 
 # Copy source code
 COPY . .
