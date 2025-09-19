@@ -17,7 +17,7 @@ RUN yarn install
 COPY . .
 
 # Build the application
-RUN yarn build
+RUN yarn run build
 
 # Production stage
 FROM nginx:alpine AS production
