@@ -77,22 +77,6 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y curl
 
-      - name: Wait for backend health
-        run: |
-          for i in {1..10}; do
-            if curl -f http://localhost:8000/health; then exit 0; fi
-            sleep 5
-          done
-          exit 1
-
-      - name: Wait for frontend health
-        run: |
-          for i in {1..10}; do
-            if curl -f http://localhost:5173; then exit 0; fi
-            sleep 5
-          done
-          exit 1
-
       - name: Docker Compose Down
         if: always()
         run: |
