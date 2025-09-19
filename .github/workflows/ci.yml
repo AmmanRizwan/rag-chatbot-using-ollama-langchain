@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      ollama:
+        image: ollama/ollama:latest
+        ports:
+          - 11434:11434
+    env:
+      MODEL_NAME: llama3.2:1b
+      BACKEND_PORT: 8000
+      FRONTEND_PORT: 3000
+      OLLAMA_PORT: 11434
+      OLLAMA_HOST: 0.0.0.0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint backend
+        run: |
+          cd backend
+          pip install flake8
+          flake8 .
+
+      - name: Install frontend dependencies
+        run: |
+          cd chat
+          npm ci
+
+      - name: Lint frontend
+        run: |
+          cd chat
+          npm run lint
+
+      - name: Build frontend
+        run: |
+          cd chat
+          npm run build
+
+      - name: Run backend tests (if any)
+        run: |
+          cd backend
+          if [ -d "tests" ]; then pytest; else echo "No tests found"; fi
+
+      - name: Run frontend tests (if any)
+        run: |
+          cd chat
+          if [ -f "package.json" ] && jq '.scripts.test' package.json | grep -qv null; then npm test; else echo "No tests found"; fi
+
+      - name: Docker Compose Build
+        run: |
+          docker-compose build --parallel
+
+      - name: Docker Compose Up (detached)
+        run: |
+          docker-compose up -d
+
+      - name: Wait for backend health
+        run: |
+          for i in {1..10}; do
+            if curl -f http://localhost:8000/health; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Wait for frontend health
+        run: |
+          for i in {1..10}; do
+            if curl -f http://localhost:3000; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Docker Compose Down
+        if: always()
+        run: |
+          docker-compose down -v
