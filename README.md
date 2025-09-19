@@ -170,12 +170,6 @@ MODEL_NAME=gemma2:2b
 PORT=8000
 ```
 
-**Chat `.env`**:
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY=your_supabase_key
-```
-
 ### Model Configuration
 
 You can change the Ollama model by updating the `MODEL_NAME` in your `.env` file:
