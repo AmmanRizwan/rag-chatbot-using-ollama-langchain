@@ -1,8 +1,6 @@
 # Use Node.js 18 alpine image as base
 FROM node:20-alpine AS builder
 
-# Enable corepack for yarn support
-RUN corepack enable
 
 # Set working directory
 WORKDIR /app
@@ -10,14 +8,17 @@ WORKDIR /app
 # Copy package.json and yarn.lock (if available)
 COPY package*.json yarn.lock* ./
 
-# Install dependencies
-RUN yarn install
-
 # Copy source code
 COPY . .
 
+# Enable corepack for yarn support
+RUN corepack enable
+
+# Install dependencies
+RUN yarn install
+
 # Build the application
-RUN yarn run build
+RUN yarn build
 
 # Production stage
 FROM nginx:alpine AS production
